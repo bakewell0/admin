@@ -19,9 +19,8 @@
 			<el-form-item label="来源">
 				<el-input v-model="form.origin"></el-input>
 			</el-form-item>
-			<el-form-item label="新闻内容">
-				<quill-editor v-model="form.news_content" ref="myQuillEditor" :options="editorOption" @blur="onEditorBlur($event)" @focus="onEditorFocus($event)" @change="onEditorChange($event)">
-				</quill-editor>
+			<el-form-item label="新闻内容">				
+				<div id="news_content" v-model="form.news_content"></div>
 			</el-form-item>
 			<el-form-item style="text-align: center;">
 				<el-button type="primary" @click="addNews">立即创建</el-button>
@@ -43,10 +42,9 @@
 					news_name: "",
 					abstract: "",
 					author: "",
-					origin: "",
-					news_content: ""
+					origin: ""
 				},
-				editorOption:{},
+				editor:{},
 				imageUrl: ''
 			};
 		},
@@ -59,7 +57,7 @@
 						abstract: this.form.abstract,
 						author: this.form.author,
 						origin: this.form.origin,
-						news_content: this.form.news_content
+						news_content: this.editor.txt.html()
 					})
 					.then(function(response) {
 						if(response.data.meta.errno == 0) {
@@ -76,27 +74,22 @@
 				this.imageUrl = URL.createObjectURL(file.raw);
 			},
 			beforeAvatarUpload(file) {
-				const isJPG = file.type === 'image/jpeg';
 				const isLt2M = file.size / 1024 / 1024 < 2;
-
-				if(!isJPG) {
-					this.$message.error('上传头像图片只能是 JPG 格式!');
-				}
 				if(!isLt2M) {
 					this.$message.error('上传头像图片大小不能超过 2MB!');
 				}
-				return isJPG && isLt2M;
-			},
-			//富文本编辑器
-			onEditorBlur(){//失去焦点事件
-				
-            },
-            onEditorFocus(){//获得焦点事件
-            	
-            },
-            onEditorChange(){//内容改变事件
-            	
-            }
+				return isLt2M;
+			}
+		},
+		created(){
+			
+		},
+		mounted(){
+			var E = window.wangEditor
+		    var editor = new E('#news_content');
+		    this.editor = editor;
+		    editor.customConfig.uploadImgShowBase64 = false;
+		    editor.create();
 		}
 	}
 </script>
